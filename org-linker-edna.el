@@ -62,9 +62,29 @@ S is a string formatted as org edna ids property value."
 (defun org-linker-edna-set-blocker (source target)
   (org-entry-put target "BLOCKER" (format "ids%s" (org-linker-edna-set-prop source target "BLOCKER"))))
 
+(defun org-linker-edna-todo-state ()
+  (let ((selected-state (ido-completing-read "todo!: " (cons "nil" org-todo-keywords-1))))
+    (if (not (or (string= selected-state "nil") (string= selected-state "")))
+	(concat " todo!(" selected-state ")")
+      "")))
+
+
+(defun org-linker-edna-schedule ()
+  (let ((scheduled-date (read-string "Schedule: ")))
+    (if (not (string= scheduled-date ""))
+	(concat " scheduled!(" scheduled-date ")")
+      "")))
+
 
 (defun org-linker-edna-set-trigger (source target)
-  (org-entry-put target "TRIGGER" (concat (format "ids%s" (org-linker-edna-set-prop source target "TRIGGER")) " todo!(TODO) scheduled!(\".\")")))
+  (let* ((todo-state (org-linker-edna-todo-state))
+	 (scheduled-date (org-linker-edna-schedule)))
+    (org-entry-put target "TRIGGER"
+		   (concat
+		    (format "ids%s"
+			    (org-linker-edna-set-prop source target "TRIGGER"))
+		    todo-state
+		    scheduled-date))))
 
 
 (defun org-linker-edna-callback (source target)
