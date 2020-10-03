@@ -56,7 +56,7 @@ S is a string formatted as org edna ids property value."
 	  (if (not (member source-id existing-blocker-ids))
 	      (cons source-id existing-blocker-ids)
 	    existing-blocker-ids)
-	(cons source-id '()))))
+	(cons (concat "\"id:" source-id "\"") '()))))
 
 (defun org-linker-edna-set-blocker (source target)
   (org-entry-put target "BLOCKER" (format "ids%s" (org-linker-edna-set-prop source target "BLOCKER"))))
