@@ -58,7 +58,6 @@ S is a string formatted as org edna ids property value."
 	    existing-blocker-ids)
 	(cons source-id '()))))
 
-
 (defun org-linker-edna-set-blocker (source target)
   (org-entry-put target "BLOCKER" (format "ids%s" (org-linker-edna-set-prop source target "BLOCKER"))))
 
@@ -86,12 +85,82 @@ S is a string formatted as org edna ids property value."
 		    todo-state
 		    scheduled-date))))
 
+(defun org-linker-edna-set-trigger-helm (source target)
+  (let* ((actions (helm :sources (helm-build-sync-source "Select Trigger Actions"
+				   :candidates org-linker-edna-actions
+				   :action 'org-linker-edna-actions-dispatcher)))
+	 (todo (plist-get actions :todo))
+	 (scheduled (plist-get actions :scheduled))
+	 (deadline (plist-get actions :deadline))
+	 (todo-state (when todo
+		       (concat " todo!(" todo ")")))
+	 (scheduled-date (when scheduled
+			   (concat " scheduled!(\"" scheduled "\")")))
+	 (deadline-date (when deadline
+			  (concat " deadline!(\"" deadline "\")")))
+	 (existing-trigger (org-entry-get (marker-position target) "TRIGGER"))
+	 (existing-blocker-ids (org-linker-edna-ids (org-entry-get (marker-position target) "TRIGGER")))
+	 (source-id (org-linker-edna-get-or-create-id-for-marker source)))
+    (if existing-blocker-ids
+	(if (member source-id existing-blocker-ids)
+	    (org-entry-put target "TRIGGER"
+			   (concat
+			    existing-trigger
+			    todo-state
+			    scheduled-date
+			    deadline-date))
+	  (org-entry-put target "TRIGGER"
+			 (concat
+			  existing-trigger
+			  (format " ids(%s)"
+				  (org-linker-edna-get-or-create-id-for-marker source))
+			  todo-state
+			  scheduled-date
+			  deadline-date)))
+      (org-entry-put target "TRIGGER"
+		     (concat
+		      existing-trigger
+		      (format " ids%s"
+			      (org-linker-edna-set-prop source target "TRIGGER"))
+		      todo-state
+		      scheduled-date
+		      deadline-date)))))
+
+
+
+
+(defvar org-linker-edna-actions '("scheduled" "deadline" "todo"))
+(setq org-linker-edna-actions '("scheduled" "deadline" "todo"))
+
+
+(defun org-linker-edna-date-selector (type)
+  (read-string (format "%s: " (capitalize type))))
+
+
+(defun org-linker-edna-todo-candidates ()
+  (buffer-local-value 'org-todo-keywords-1 (current-buffer)))
+
+
+(defun org-linker-edna-state-selector ()
+  (helm :sources (helm-build-sync-source "Select TODO state"
+		   :candidates org-todo-keywords-1)))
+
+
+(defun org-linker-edna-action-dispatcher (candidate)
+  (cond ((string= "scheduled" candidate) `(:scheduled ,(org-linker-edna-date-selector "scheduled")))
+	((string= "deadline" candidate) `(:deadline ,(org-linker-edna-date-selector "deadline")))
+	((string= "todo" candidate) `(:todo ,(org-linker-edna-state-selector)))))
+
+
+(defun org-linker-edna-actions-dispatcher (candidate)
+  (mapcan 'org-linker-edna-action-dispatcher (helm-marked-candidates)))
+
 
 (defun org-linker-edna-callback (source target)
   (let ((source-id (org-linker-edna-get-or-create-id-for-marker source))
 	(target-id (org-linker-edna-get-or-create-id-for-marker target)))
     (org-linker-edna-set-blocker source target)
-    (org-linker-edna-set-trigger target source)
+    (org-linker-edna-set-trigger-helm target source)
     ))
 
 

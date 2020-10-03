@@ -9,14 +9,14 @@ Here is an example on the basic functionality of =org-linker-edna=.
 Consider these two Org mode headings:
 
 : ** STARTED Cleaning my desk
-: 
+:
 : ** Make my desk messy again
 
 They do have a natural dependency: /it is required to have a clean
 desk in order to be able to mess it up again/.
 
 Therefore, you can define a dependency such as cleaning up the desk is
-required to be set to =DONE= before being messy can be set to =DONE=. 
+required to be set to =DONE= before being messy can be set to =DONE=.
 
 With =org-edna=, you do have two possibilities that may be applied in
 this example: =TRIGGER= and =BLOCKER= properties. This would require
@@ -32,7 +32,7 @@ shortcut), you can get the following result:
 : :ID:       ac3da9ff-1069-40ee-8aba-74734a64b820
 : :TRIGGER:  ids(0f99de80-8592-4a5e-8cf8-5d27f23c1d8c) todo!(TODO) scheduled!("++1d")
 : :END:
-: 
+:
 : ** Make my desk messy again
 : :PROPERTIES:
 : :ID:       0f99de80-8592-4a5e-8cf8-5d27f23c1d8c
@@ -60,22 +60,25 @@ manual effort for creating dependencies*.
 
 * Installation
 
-Please do install [[https://github.com/toshism/org-linker][org-linker]] beforehand because =org-super-links= is
+Please do install [[https://github.com/toshism/org-linker][org-linker]] beforehand because =org-linker-edna= is
 using its functionality.
 
-Using [[https://github.com/quelpa/quelpa][quelpa]] makes it easy to install =org-super-links=. Example basic
-configuration:
+Using [[https://github.com/quelpa/quelpa][quelpa]] makes it easy to install =org-linker-edna=. Example basic
+configuration including =org-linker=.
 #+begin_src elisp
-  (use-package org-super-links
-    :quelpa (org-super-links :repo "toshism/org-linker-edna" :fetcher github)
+  (use-package org-linker
+    :quelpa (org-linker :repo "toshism/org-linker" :fetcher github))
+
+  (use-package org-linker-edna
+    :quelpa (org-linker-enda :repo "toshism/org-linker-edna" :fetcher github)
     :bind (("C-c s e" . org-linker-edna)) ;; follows org-super-link binding patterns
 #+end_src
 
 * Notes
 
-This is still kind of in flux, so things could change... It's starting
-to settle down, but I'm still playing around with the idea a bit. If
-you want something that will stay reasonably stable pick a tag.
+This is still alpha at best. It works to some degree but is still in
+the experimental stage.  Try it out and let me know what issues you
+have or what you would like to see here.
 
 * Related Resources
 
@@ -83,6 +86,10 @@ you want something that will stay reasonably stable pick a tag.
 - [[https://github.com/toshism/org-super-links][org-super-links]] an independent package to create Org mode links to headings with auto-backlinks
 - [[https://karl-voit.at/2020/08/14/project-mgt-draft/][This blog article]] that drafts an example workflow for Org mode with advanced usage of dependencies
 - [[https://orgmode.org/worg/org-contrib/org-depend.html][org-depend]]: a much simpler alternative to =org-edna= which does not have a corresponding tool like =org-linker-edna= (at least to my knowledge)
+
+* Credits
+
+Thanks to [[https://karl-voit.at/][Karl Voit]] for the idea and direction.
 
 * License
 
