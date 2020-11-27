@@ -50,16 +50,14 @@ S is a string formatted as org edna ids property value."
 
 
 (defun org-linker-edna-set-prop (source target property)
-    (let* ((existing-blocker-ids (org-linker-edna-ids (org-entry-get (marker-position target) property)))
+  (let* ((existing-blocker-ids (org-linker-edna-ids (org-entry-get (marker-position target) property)))
 	 (source-id (org-linker-edna-get-or-create-id-for-marker source)))
-      (if existing-blocker-ids
-	  (if (not (member source-id existing-blocker-ids))
-	      (cons source-id existing-blocker-ids)
-	    existing-blocker-ids)
-	(cons (concat "\"id:" source-id "\"") '()))))
+    (cons (concat "\"id:" source-id "\"") '())))
+
 
 (defun org-linker-edna-set-blocker (source target)
   (org-entry-put target "BLOCKER" (format "ids%s" (org-linker-edna-set-prop source target "BLOCKER"))))
+
 
 (defun org-linker-edna-todo-state ()
   (let ((selected-state (ido-completing-read "todo!: " (cons "nil" org-todo-keywords-1))))
@@ -85,6 +83,7 @@ S is a string formatted as org edna ids property value."
 		    todo-state
 		    scheduled-date))))
 
+
 (defun org-linker-edna-set-trigger-helm (source target)
   (let* ((actions (helm :sources (helm-build-sync-source "Select Trigger Actions"
 				   :candidates org-linker-edna-actions
@@ -101,32 +100,14 @@ S is a string formatted as org edna ids property value."
 	 (existing-trigger (org-entry-get (marker-position target) "TRIGGER"))
 	 (existing-blocker-ids (org-linker-edna-ids (org-entry-get (marker-position target) "TRIGGER")))
 	 (source-id (org-linker-edna-get-or-create-id-for-marker source)))
-    (if existing-blocker-ids
-	(if (member source-id existing-blocker-ids)
-	    (org-entry-put target "TRIGGER"
-			   (concat
-			    existing-trigger
-			    todo-state
-			    scheduled-date
-			    deadline-date))
-	  (org-entry-put target "TRIGGER"
-			 (concat
-			  existing-trigger
-			  (format " ids(%s)"
-				  (org-linker-edna-get-or-create-id-for-marker source))
-			  todo-state
-			  scheduled-date
-			  deadline-date)))
-      (org-entry-put target "TRIGGER"
-		     (concat
-		      existing-trigger
-		      (format " ids%s"
-			      (org-linker-edna-set-prop source target "TRIGGER"))
-		      todo-state
-		      scheduled-date
-		      deadline-date)))))
-
-
+    (org-entry-put target "TRIGGER"
+		   (concat
+		    existing-trigger
+		    (format " ids%s"
+			    (org-linker-edna-set-prop source target "TRIGGER"))
+		    todo-state
+		    scheduled-date
+		    deadline-date))))
 
 
 (defvar org-linker-edna-actions '("scheduled" "deadline" "todo"))
