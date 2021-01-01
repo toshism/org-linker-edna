@@ -44,9 +44,10 @@ S is a string formatted as org edna ids property value."
 
 
 (defun org-linker-edna-get-or-create-id-for-marker (m)
-  (save-excursion
-    (goto-char (marker-position m))
-    (funcall link-id-function)))
+  (with-current-buffer (marker-buffer m)
+    (save-excursion
+      (goto-char (marker-position m))
+      (funcall link-id-function))))
 
 
 (defun org-linker-edna-set-prop (source target property)
