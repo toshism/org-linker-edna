@@ -29,6 +29,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'helm-source nil t))
+
 (require 'org-linker)
 
 (setq org-linker-to-heading t)
