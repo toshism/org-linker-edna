@@ -70,7 +70,7 @@ configuration including =org-linker=.
     :quelpa (org-linker :repo "toshism/org-linker" :fetcher github))
 
   (use-package org-linker-edna
-    :quelpa (org-linker-enda :repo "toshism/org-linker-edna" :fetcher github)
+    :quelpa (org-linker-edna :repo "toshism/org-linker-edna" :fetcher github)
     :bind (("C-c s e" . org-linker-edna)) ;; follows org-super-link binding patterns
 #+end_src
 
